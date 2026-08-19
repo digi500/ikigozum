@@ -95,6 +95,13 @@ em, i, .italic {
     gap: 2px;
 }
 
+.site-logo-img {
+    height: 32px;
+    width: auto;
+    margin-right: 8px;
+    object-fit: contain;
+}
+
 .logo .eye-letter {
     position: relative;
     display: inline-block;
