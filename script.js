@@ -70,67 +70,78 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(item);
     });
 
-    // Real Country-based Visitor Counter using Vercel KV
+    // Real Country-based Visitor Counter using Supabase
+    const supabaseUrl = 'https://cqideitoffdmzvktehnf.supabase.co';
+    const supabaseKey = 'sb_publishable_hDh6SzEhiUBwl88AuGSeyg_-XinES0B';
+    // Initialize Supabase client (from CDN)
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
     const shouldIncrement = !sessionStorage.getItem('counted_real_db');
     if (shouldIncrement) {
         sessionStorage.setItem('counted_real_db', 'true');
     }
 
-    // Try to get accurate location from ipapi, fallback to Vercel headers if it fails
     fetch('https://ipapi.co/json/')
         .then(res => res.json())
-        .then(data => data.country_code)
-        .catch(() => '') // ignore error, pass empty
-        .then(countryCode => {
-            const query = new URLSearchParams({ increment: shouldIncrement });
-            if (countryCode) query.append('country', countryCode);
-            
-            return fetch(`/api/counter?${query.toString()}`);
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.error) {
-                console.log('Counter API error:', data.error);
-                return;
-            }
-            
-            const countriesData = data.countries || {};
-            
-            // Convert to array and sort by count descending
-            let sortedCountries = Object.entries(countriesData)
-                .sort((a, b) => b[1] - a[1]);
+        .then(data => data.country_code || 'TR')
+        .catch(() => 'TR')
+        .then(async (countryCode) => {
+            countryCode = countryCode.toUpperCase().substring(0, 2);
+
+            try {
+                if (shouldIncrement) {
+                    // Call the RPC function to increment securely
+                    await supabaseClient.rpc('increment_visitor', { p_country_code: countryCode });
+                }
+
+                // Fetch all global counts
+                const { data, error } = await supabaseClient
+                    .from('visitor_counts')
+                    .select('*')
+                    .order('count', { ascending: false });
+
+                if (error) {
+                    console.error('Supabase query error:', error);
+                    return;
+                }
                 
-            // Always ensure current country is displayed, even if count is low
-            const currentCountry = data.currentCountry;
-            const currentIndex = sortedCountries.findIndex(c => c[0] === currentCountry);
-            
-            // If the user's country is not in the top 4, ensure it is injected into the visible list
-            if (currentIndex > 4) {
-                const myCountryData = sortedCountries.splice(currentIndex, 1)[0];
-                sortedCountries.splice(4, 0, myCountryData);
-            }
-            
-            // Show top 5 countries
-            sortedCountries = sortedCountries.slice(0, 5);
-            
-            const counterContainer = document.getElementById('country-counter');
-            counterContainer.innerHTML = '';
-            
-            sortedCountries.forEach(([code, count]) => {
-                const flagUrl = `https://flagcdn.com/w40/${code.toLowerCase()}.png`;
+                let sortedCountries = data || [];
                 
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'country-item';
-                itemDiv.innerHTML = `
-                    <img src="${flagUrl}" alt="${code}" title="${code}">
-                    <span class="count-number">${count.toLocaleString()}</span>
-                `;
-                counterContainer.appendChild(itemDiv);
-            });
-            
-            if (sortedCountries.length > 0) {
-                counterContainer.style.display = 'flex';
+                // Ensure current country is displayed even if count is low
+                const currentIndex = sortedCountries.findIndex(c => c.country_code === countryCode);
+                if (currentIndex > 4) {
+                    const myCountryData = sortedCountries.splice(currentIndex, 1)[0];
+                    sortedCountries.splice(4, 0, myCountryData);
+                } else if (currentIndex === -1 && shouldIncrement) {
+                    // Fallback in case of replication delay
+                    sortedCountries.push({ country_code: countryCode, count: 1 });
+                }
+                
+                // Show top 5 countries
+                sortedCountries = sortedCountries.slice(0, 5);
+                
+                const counterContainer = document.getElementById('country-counter');
+                counterContainer.innerHTML = '';
+                
+                sortedCountries.forEach(row => {
+                    const code = row.country_code;
+                    const count = row.count;
+                    const flagUrl = `https://flagcdn.com/w40/${code.toLowerCase()}.png`;
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'country-item';
+                    itemDiv.innerHTML = `
+                        <img src="${flagUrl}" alt="${code}" title="${code}">
+                        <span class="count-number">${count.toLocaleString()}</span>
+                    `;
+                    counterContainer.appendChild(itemDiv);
+                });
+                
+                if (sortedCountries.length > 0) {
+                    counterContainer.style.display = 'flex';
+                }
+            } catch (err) {
+                console.log('Real Counter fetch error:', err);
             }
-        })
-        .catch(err => console.log('Real Counter fetch error:', err));
+        });
 });
