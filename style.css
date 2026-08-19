@@ -88,6 +88,30 @@ em, i, .italic {
 .logo {
     font-size: 1.5rem;
     letter-spacing: 2px;
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.logo .eye-letter {
+    position: relative;
+    display: inline-block;
+}
+
+.logo .eye-letter::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px var(--bg-color), 0 0 0 3px var(--accent);
+    opacity: 0.8;
 }
 
 .menu-toggle {
@@ -128,9 +152,10 @@ em, i, .italic {
 }
 
 .hero-title {
-    font-size: 5vw;
-    line-height: 1.1;
+    font-size: 4.5vw;
+    line-height: 1.15;
     margin-bottom: 2rem;
+    letter-spacing: -1px;
 }
 
 .hero-title .line {
@@ -217,7 +242,7 @@ em, i, .italic {
 .hero-image {
     width: 100%;
     height: 100%;
-    background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop');
+    background-image: url('hero-bg.jpg');
     background-size: cover;
     background-position: center;
     transform: scale(1.1);
@@ -228,35 +253,7 @@ em, i, .italic {
     transform: scale(1);
 }
 
-/* Scroll Indicator */
-.scroll-indicator {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    animation: fadeIn 1s ease forwards 1.5s;
-}
-
-.mouse {
-    width: 26px;
-    height: 42px;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 15px;
-    position: relative;
-}
-
-.wheel {
-    width: 4px;
-    height: 8px;
-    background: var(--accent);
-    border-radius: 2px;
-    position: absolute;
-    top: 6px;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: scroll 1.5s infinite;
-}
+/* Scroll Indicator Removed */
 
 /* Portfolio Section */
 .portfolio {
