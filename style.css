@@ -429,13 +429,15 @@ footer {
 }
 
 .country-item img {
-    height: 18px;
+    width: 24px;
+    height: 16px;
+    object-fit: cover;
     border-radius: 2px;
 }
 
 .country-item .count-number {
     color: var(--accent);
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 700;
 }
 
