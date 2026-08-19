@@ -7,11 +7,11 @@ module.exports = async function(req, res) {
         return res.status(200).end();
     }
 
-    const KV_REST_API_URL = process.env.KV_REST_API_URL;
-    const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN;
+    const KV_REST_API_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
     if (!KV_REST_API_URL || !KV_REST_API_TOKEN) {
-        return res.status(500).json({ error: 'KV database not configured. Please create a KV database in Vercel Storage.' });
+        return res.status(500).json({ error: 'KV database not configured. Please create an Upstash Redis database in Vercel Storage.' });
     }
 
     // Attempt to get country from client query, or Vercel edge headers
