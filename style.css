@@ -416,25 +416,26 @@ footer {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 20px;
     opacity: 0.9;
 }
 
-.country-counter .flag {
+.country-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
-.country-counter .count-info {
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.8);
-    letter-spacing: 1px;
-    display: flex;
-    gap: 8px;
+.country-item img {
+    height: 18px;
+    border-radius: 2px;
 }
 
-.country-counter .count-number {
+.country-item .count-number {
     color: var(--accent);
+    font-size: 0.75rem;
     font-weight: 700;
 }
 

@@ -74,25 +74,51 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('https://ipapi.co/json/')
         .then(response => response.json())
         .then(data => {
-            const countryCode = data.country_code;
-            if (!countryCode) return;
+            const currentCountry = data.country_code;
+            if (!currentCountry) return;
             
-            // Use FlagCDN for a guaranteed image flag (Windows doesn't support emoji flags)
-            const flagUrl = `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`;
+            // Base list of countries to show
+            let displayCountries = ['TR', 'US', 'DE', 'GB'];
             
-            // Pseudo-random realistic base counter for the country (deterministic based on country code)
-            const baseCount = (countryCode.charCodeAt(0) * 173) + (countryCode.charCodeAt(1) * 31) + 4200;
+            // If visitor's country isn't in the list, add it to the front
+            if (!displayCountries.includes(currentCountry)) {
+                displayCountries.unshift(currentCountry);
+                if (displayCountries.length > 5) displayCountries.pop();
+            }
             
-            // Increment local visits to simulate live counter
-            let myVisits = parseInt(localStorage.getItem('visits_' + countryCode) || '0');
-            myVisits++;
-            localStorage.setItem('visits_' + countryCode, myVisits);
+            const counterContainer = document.getElementById('country-counter');
+            counterContainer.innerHTML = '';
             
-            const totalCount = baseCount + myVisits;
+            displayCountries.forEach(code => {
+                const isCurrent = (code === currentCountry);
+                const flagUrl = `https://flagcdn.com/w40/${code.toLowerCase()}.png`;
+                
+                // Deterministic base count
+                let baseCount = (code.charCodeAt(0) * 173) + (code.charCodeAt(1) * 31);
+                if (code === 'TR') baseCount += 24000;
+                else if (code === 'US') baseCount += 8500;
+                else if (code === 'DE') baseCount += 4200;
+                else if (code === 'GB') baseCount += 3100;
+                else baseCount += 1500;
+                
+                let totalCount = baseCount;
+                if (isCurrent) {
+                    let myVisits = parseInt(localStorage.getItem('visits_' + code) || '0');
+                    myVisits++;
+                    localStorage.setItem('visits_' + code, myVisits);
+                    totalCount += myVisits;
+                }
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'country-item';
+                itemDiv.innerHTML = `
+                    <img src="${flagUrl}" alt="${code}" title="${code}">
+                    <span class="count-number">${totalCount.toLocaleString()}</span>
+                `;
+                counterContainer.appendChild(itemDiv);
+            });
             
-            document.getElementById('country-flag').innerHTML = `<img src="${flagUrl}" alt="${countryCode}" style="height: 16px; border-radius: 2px;">`;
-            document.getElementById('country-count').textContent = totalCount.toLocaleString();
-            document.getElementById('country-counter').style.display = 'flex';
+            counterContainer.style.display = 'flex';
         })
         .catch(err => console.log('Counter fetch error:', err));
 });
