@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Real Country-based Visitor Counter using Supabase
     const supabaseUrl = 'https://cqideitoffdmzvktehnf.supabase.co';
-    const supabaseKey = 'sb_publishable_hDh6SzEhiUBwl88AuGSeyg_-XinES0B';
+    const supabaseKey = 'sb_publishable_hDh6SzEh1UBwl88AuGSeyg_-X1nES0B';
     // Initialize Supabase client (from CDN)
     const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
