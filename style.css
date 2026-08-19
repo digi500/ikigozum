@@ -436,9 +436,10 @@ footer {
 }
 
 .country-item .count-number {
-    color: var(--accent);
+    color: var(--text-color);
+    opacity: 0.6;
     font-size: 0.65rem;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 /* Animations */
