@@ -70,59 +70,67 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(item);
     });
 
-    // Custom Country-based Visitor Counter
+    // Real Country-based Visitor Counter using Vercel KV
+    const shouldIncrement = !sessionStorage.getItem('counted_real_db');
+    if (shouldIncrement) {
+        sessionStorage.setItem('counted_real_db', 'true');
+    }
+
+    // Try to get accurate location from ipapi, fallback to Vercel headers if it fails
     fetch('https://ipapi.co/json/')
-        .then(response => response.json())
+        .then(res => res.json())
+        .then(data => data.country_code)
+        .catch(() => '') // ignore error, pass empty
+        .then(countryCode => {
+            const query = new URLSearchParams({ increment: shouldIncrement });
+            if (countryCode) query.append('country', countryCode);
+            
+            return fetch(`/api/counter?${query.toString()}`);
+        })
+        .then(res => res.json())
         .then(data => {
-            const currentCountry = data.country_code;
-            if (!currentCountry) return;
-            
-            // Base list of countries to show
-            let displayCountries = ['TR', 'US', 'DE', 'GB'];
-            
-            // If visitor's country isn't in the list, add it to the front
-            if (!displayCountries.includes(currentCountry)) {
-                displayCountries.unshift(currentCountry);
-                if (displayCountries.length > 5) displayCountries.pop();
+            if (data.error) {
+                console.log('Counter API error:', data.error);
+                return;
             }
+            
+            const countriesData = data.countries || {};
+            
+            // Convert to array and sort by count descending
+            let sortedCountries = Object.entries(countriesData)
+                .sort((a, b) => b[1] - a[1]);
+                
+            // Always ensure current country is displayed, even if count is low
+            const currentCountry = data.currentCountry;
+            const currentIndex = sortedCountries.findIndex(c => c[0] === currentCountry);
+            
+            // If the user's country is not in the top 4, ensure it is injected into the visible list
+            if (currentIndex > 4) {
+                const myCountryData = sortedCountries.splice(currentIndex, 1)[0];
+                sortedCountries.splice(4, 0, myCountryData);
+            }
+            
+            // Show top 5 countries
+            sortedCountries = sortedCountries.slice(0, 5);
             
             const counterContainer = document.getElementById('country-counter');
             counterContainer.innerHTML = '';
             
-            displayCountries.forEach(code => {
-                const isCurrent = (code === currentCountry);
+            sortedCountries.forEach(([code, count]) => {
                 const flagUrl = `https://flagcdn.com/w40/${code.toLowerCase()}.png`;
-                
-                // Deterministic base count
-                let baseCount = (code.charCodeAt(0) * 173) + (code.charCodeAt(1) * 31);
-                if (code === 'TR') baseCount += 24000;
-                else if (code === 'US') baseCount += 8500;
-                else if (code === 'DE') baseCount += 4200;
-                else if (code === 'GB') baseCount += 3100;
-                else baseCount += 1500;
-                
-                let totalCount = baseCount;
-                if (isCurrent) {
-                    let myVisits = parseInt(localStorage.getItem('visits_' + code) || '0');
-                    // Only increment once per session to simulate unique visitors
-                    if (!sessionStorage.getItem('counted_' + code)) {
-                        myVisits++;
-                        localStorage.setItem('visits_' + code, myVisits);
-                        sessionStorage.setItem('counted_' + code, 'true');
-                    }
-                    totalCount += myVisits;
-                }
                 
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'country-item';
                 itemDiv.innerHTML = `
                     <img src="${flagUrl}" alt="${code}" title="${code}">
-                    <span class="count-number">${totalCount.toLocaleString()}</span>
+                    <span class="count-number">${count.toLocaleString()}</span>
                 `;
                 counterContainer.appendChild(itemDiv);
             });
             
-            counterContainer.style.display = 'flex';
+            if (sortedCountries.length > 0) {
+                counterContainer.style.display = 'flex';
+            }
         })
-        .catch(err => console.log('Counter fetch error:', err));
+        .catch(err => console.log('Real Counter fetch error:', err));
 });
