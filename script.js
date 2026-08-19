@@ -104,8 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 let totalCount = baseCount;
                 if (isCurrent) {
                     let myVisits = parseInt(localStorage.getItem('visits_' + code) || '0');
-                    myVisits++;
-                    localStorage.setItem('visits_' + code, myVisits);
+                    // Only increment once per session to simulate unique visitors
+                    if (!sessionStorage.getItem('counted_' + code)) {
+                        myVisits++;
+                        localStorage.setItem('visits_' + code, myVisits);
+                        sessionStorage.setItem('counted_' + code, 'true');
+                    }
                     totalCount += myVisits;
                 }
                 
