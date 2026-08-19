@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Real Country-based Visitor Counter using Supabase
     const supabaseUrl = 'https://cqideitoffdmzvktehnf.supabase.co';
-    const supabaseKey = 'sb_publishable_hDh6SzEh1UBwl88AuGSeyg_-X1nES0B';
+    const supabaseKey = 'sb_publishable_hDh6SzEhiUBwl88AuGSeyg_-XinES0B';
     // Initialize Supabase client (from CDN)
     const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 if (shouldIncrement) {
                     // Call the RPC function to increment securely
-                    await supabaseClient.rpc('increment_visitor', { p_country_code: countryCode });
+                    const { error: rpcError } = await supabaseClient.rpc('increment_visitor', { p_country_code: countryCode });
+                    if (rpcError) console.error('RPC Error:', rpcError);
                 }
 
                 // Fetch all global counts
@@ -112,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentIndex > 4) {
                     const myCountryData = sortedCountries.splice(currentIndex, 1)[0];
                     sortedCountries.splice(4, 0, myCountryData);
-                } else if (currentIndex === -1 && shouldIncrement) {
-                    // Fallback in case of replication delay
-                    sortedCountries.push({ country_code: countryCode, count: 1 });
+                } else if (currentIndex === -1) {
+                    // If database is empty, or country missing, push it so it shows up
+                    sortedCountries.push({ country_code: countryCode, count: shouldIncrement ? 1 : 0 });
                 }
                 
                 // Show top 5 countries
