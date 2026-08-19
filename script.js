@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     sortedCountries.splice(4, 0, myCountryData);
                 } else if (currentIndex === -1) {
                     // If database is empty, or country missing, push it so it shows up
-                    sortedCountries.push({ country_code: countryCode, count: shouldIncrement ? 1 : 0 });
+                    sortedCountries.push({ country_code: countryCode, count: Math.max(1, shouldIncrement ? 1 : 1) });
                 }
                 
                 // Show top 5 countries
