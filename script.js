@@ -69,4 +69,30 @@ document.addEventListener('DOMContentLoaded', () => {
         item.style.transition = 'all 0.8s cubic-bezier(0.19, 1, 0.22, 1)';
         observer.observe(item);
     });
+
+    // Custom Country-based Visitor Counter
+    fetch('https://ipapi.co/json/')
+        .then(response => response.json())
+        .then(data => {
+            const countryCode = data.country_code;
+            if (!countryCode) return;
+            
+            // Convert country code to emoji flag
+            const flag = countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397));
+            
+            // Pseudo-random realistic base counter for the country (deterministic based on country code)
+            const baseCount = (countryCode.charCodeAt(0) * 173) + (countryCode.charCodeAt(1) * 31);
+            
+            // Increment local visits to simulate live counter
+            let myVisits = parseInt(localStorage.getItem('visits_' + countryCode) || '0');
+            myVisits++;
+            localStorage.setItem('visits_' + countryCode, myVisits);
+            
+            const totalCount = baseCount + myVisits;
+            
+            document.getElementById('country-flag').textContent = flag;
+            document.getElementById('country-count').textContent = totalCount;
+            document.getElementById('country-counter').style.display = 'flex';
+        })
+        .catch(err => console.log('Counter fetch error:', err));
 });
