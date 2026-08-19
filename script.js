@@ -77,11 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const countryCode = data.country_code;
             if (!countryCode) return;
             
-            // Convert country code to emoji flag
-            const flag = countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397));
+            // Use FlagCDN for a guaranteed image flag (Windows doesn't support emoji flags)
+            const flagUrl = `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`;
             
             // Pseudo-random realistic base counter for the country (deterministic based on country code)
-            const baseCount = (countryCode.charCodeAt(0) * 173) + (countryCode.charCodeAt(1) * 31);
+            const baseCount = (countryCode.charCodeAt(0) * 173) + (countryCode.charCodeAt(1) * 31) + 4200;
             
             // Increment local visits to simulate live counter
             let myVisits = parseInt(localStorage.getItem('visits_' + countryCode) || '0');
@@ -90,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const totalCount = baseCount + myVisits;
             
-            document.getElementById('country-flag').textContent = flag;
-            document.getElementById('country-count').textContent = totalCount;
+            document.getElementById('country-flag').innerHTML = `<img src="${flagUrl}" alt="${countryCode}" style="height: 16px; border-radius: 2px;">`;
+            document.getElementById('country-count').textContent = totalCount.toLocaleString();
             document.getElementById('country-counter').style.display = 'flex';
         })
         .catch(err => console.log('Counter fetch error:', err));
