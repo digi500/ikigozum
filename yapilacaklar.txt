@@ -1,0 +1,70 @@
+================================================================================
+                İKİGÖZÜM.COM - GOOGLE KURULUM REHBERİ (YAPILACAKLAR)
+================================================================================
+
+Bu rehber, ikigözüm.com sitesini Google Arama motoruna eklemek (Search Console)
+ve siteye giren tüm canlı ziyaretçileri izlemek (Google Analytics) için adım adım
+yapılması gereken tüm işlemleri içerir.
+
+--------------------------------------------------------------------------------
+📌 1. BÖLÜM: GOOGLE SEARCH CONSOLE (MÜLK EKLEME & SİTEYİ GOOGLE'A TANITMA)
+--------------------------------------------------------------------------------
+
+1. Tarayıcınızda https://search.google.com/search-console adresine gidin.
+2. Sol üst köşedeki mülk açılır kutusuna tıklayıp en alttaki "+ Mülk ekle" seçeneğine basın.
+3. Açılan pencerede sağ taraftaki "URL ön eki" seçeneğini seçin.
+4. Kutuya sitenizin tam adresini yazın:
+   👉 https://ikigozum.com (veya Vercel adresi: https://ikigozum.vercel.app)
+   ve "DEVAM" butonuna tıklayın.
+5. "Sahipliği doğrulayın" ekranı açılacaktır:
+   - "HTML dosyası" başlığı altındaki dosya adını (Örn: google123456789.html) veya 
+   - "HTML etiketi" seçeneğindeki meta kodunu kopyalayın.
+   - Bu dosyayı veya kodu projenizin ana dizinine ekleyip yayına alın.
+6. Dosya yayına girdikten sonra Search Console ekranındaki mavi "DOĞRULA" butonuna basın.
+7. "Sahiplik doğrulandı" onayını görünce "MÜLKE GİT" butonuna tıklayın.
+8. Sol menüden "Site Haritaları" (Sitemaps) sekmesine geçin.
+9. "Yeni bir site haritası ekleyin" kutucuğuna sadece şunu yazın:
+   👉 sitemap.xml
+10. "GÖNDER" butonuna basın. (Google sitenizdeki tüm sayfaları tarama sırasına alacaktır).
+
+
+--------------------------------------------------------------------------------
+📌 2. BÖLÜM: GOOGLE ANALYTICS 4 (CANLI ZİYARETÇİ, ŞEHİR & CİHAZ TAKİBİ)
+--------------------------------------------------------------------------------
+
+1. Tarayıcınızda https://analytics.google.com adresine gidin.
+2. Sol alttaki "Yönetici" (Dişli Çark ⚙️) simgesine tıklayın ve "+ Mülk Oluştur" deyin.
+3. Mülk Ayrıntıları:
+   - Mülk Adı: İki Gözüm
+   - Raporlama Saat Dilimi: Türkiye (GMT+03:00)
+   - Para Birimi: Türk Lirası (TRY)
+   seçin ve "İleri" butonuna basın.
+4. İşletme ayrıntılarını (Sektör: Sanat/Tasarım, Boyut: Küçük) seçip "Oluştur" butonuna basın.
+5. Platform Seçimi ekranında "Web" seçeneğini seçin.
+6. Web Akışını Ayarlayın:
+   - Web Sitesi URL'si: https://ikigozum.com (veya Vercel URL'si)
+   - Akış Adı: İki Gözüm Web
+   yazıp "Akış Oluştur" butonuna tıklayın.
+7. Karşınıza çıkan ekranda sağ üstteki "Ölçüm Kimliği"ni (G-XXXXXXXXXX) kopyalayın.
+8. "Manuel olarak yükleme" sekmesindeki Google etiket kodunu kopyalayın.
+   Örnek Kod Şablonu:
+   -----------------------------------------------------------------------
+   <!-- Google tag (gtag.js) -->
+   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+   <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+
+     gtag('config', 'G-XXXXXXXXXX');
+   </script>
+   -----------------------------------------------------------------------
+9. Bu kodu projenizdeki index.html dosyasının <head> etiketinin hemen altına ekleyip yayına alın.
+10. Kurulum bittikten sonra Google Analytics sol menüsünden:
+    👉 Raporlar ➔ Gerçek Zamanlı (Realtime)
+    sekmesine giderek anlık ziyaretçileri, dünya/Türkiye haritası üzerindeki konumlarını ve kullandıkları cihazları canlı izleyin.
+
+================================================================================
+Not: Kodları ekleme, sitemap ve robots.txt oluşturma adımlarında dosyaları bana 
+iletirseniz sizin yerinize tek tıkla entegre edip yayına alabilirim.
+================================================================================
